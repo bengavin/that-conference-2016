@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="ThatPiHunt.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ThatPiHunt"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.RowSpan="2" HorizontalAlignment="Left">
+            <Viewbox x:Name="MapViewer" Stretch="Uniform" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <Image x:Name="MapImage" Source="ms-appx:///Assets/Sample Layout.png" PointerReleased="Image_PointerReleased" HorizontalAlignment="Left" />
+            </Viewbox>
+            <Canvas x:Name="MapCanvas" Background="Transparent" IsHitTestVisible="False">
+            </Canvas>
+        </Grid>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" >
+            <Button Content="Generate Map" Click="GenerateMap_Click" />
+            <Button x:Name="StartButton" Content="Start" Click="StartGame_Click" />
+            <Button x:Name="StopButton" Content="Stop" Click="StopGame_Click" IsEnabled="False" />
+            <Button Content="Mark" Click="Mark_Click" />
+        </StackPanel>
+    </Grid>
+</Page>
