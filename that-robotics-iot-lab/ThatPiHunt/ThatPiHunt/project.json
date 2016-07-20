@@ -4,6 +4,7 @@
     "Microsoft.Azure.Devices.Client": "1.0.13",
     "Microsoft.IoT.Connections.Azure": "0.7.5.12",
     "Microsoft.IoT.Devices": "1.0.6",
+    "Microsoft.IoT.Lightning": "1.1.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2"
   },
   "frameworks": {

@@ -215,9 +215,9 @@ namespace ThatPiHunt.Views
                 _watcher.Start();
 
                 StartButton.Content = "Pause";
-                _gameService = new GameService(_mapService, _beaconService);
-                _gameService.Start(_map);
+                _gameService = new GameService(_mapService, _beaconService, new LedService());
                 _gameService.DrawBeaconRadii += _gameService_DrawBeaconRadii;
+                await _gameService.StartAsync(_map);
                 StopButton.IsEnabled = true;
             }
         }

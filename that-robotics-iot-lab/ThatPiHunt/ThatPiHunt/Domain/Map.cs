@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
-using MathNet.Numerics.LinearRegression;
 using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace ThatPiHunt.Domain
@@ -18,6 +16,40 @@ namespace ThatPiHunt.Domain
         public Contestant Contestant { get; set; }
         public PointOfInterest CurrentGoal { get; set; }
 
+        public double? CalculateDistance(PointOfInterest rangingTo, PointOfInterest destination)
+        {
+            if (rangingTo == destination)
+            {
+                return destination.EstimatedRadius;
+            }
+
+            // This is a little hokey, but basically we add the distance from
+            // the destination to our ranging beacon, then the estimated distance
+            // to the ranging beacon.
+            return rangingTo.EstimatedRadius ?? 0 +
+                   MathNet.Numerics.Distance.Euclidean(new[] { destination.Position.X, destination.Position.Y }, new[] { rangingTo.Position.X, rangingTo.Position.Y });
+
+            // Exercise for the user (come up and talk about these, or show some working code for a BONUS):
+            // 1. Given that we have a good idea of the closest beacon, might there be
+            //    a better way to estimate distance?  
+            // 2. Would it be useful to know that the closest beacon is closer or further 
+            //    from the ranging beacon than the current ranging beacon estimate?
+        }
+
+        /// <summary>
+        /// EXTRA BONUS POINTS: 
+        ///   Make this work to Trilaterate (or Multi-laterate) your position
+        ///   based on relative beacon signal strengths.  NOTE:  It probably
+        ///   isn't sufficient to just work this out, you probably would also
+        ///   need to adjust the distance estimation method in GameService to
+        ///   more accurately fit the beacon signal strength curve.
+        ///   
+        /// This just doesn't work, the beacons are simply not accurate enough
+        /// for a reasonable measurement and they move all over the place, 
+        /// plus, this math isn't even right :)
+        /// </summary>
+        /// <param name="visiblePoints"></param>
+        /// <returns></returns>
         public Point CalculatePosition(IEnumerable<Tuple<string, double>> visiblePoints)
         {
             if (!visiblePoints.Any()) { return new Windows.Foundation.Point(0, 0); }

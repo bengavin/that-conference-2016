@@ -12,6 +12,13 @@ namespace ThatPiHunt.Services
     public class GameService
     {
         /// <summary>
+        /// Don't range to any beacons with an estimated distance of
+        /// this many meters (or more), even if we think we can see
+        /// them
+        /// </summary>
+        public static double MaxReliableBeaconRange = 15;
+
+        /// <summary>
         /// What is our desired frame rate? [200ms -> 5 fps]
         /// </summary>
         public static int LoopIntervalMs = 200;
@@ -25,25 +32,33 @@ namespace ThatPiHunt.Services
 
         private readonly BeaconService _beaconService;
         private readonly MapService _mapService;
+        private readonly LedService _ledService;
         private readonly Random _random;
 
         private CancellationTokenSource _cancelSource;
         private Task _workerTask;
         private bool _isPaused;
 
-        public GameService(MapService mapService, BeaconService beaconService)
+        public GameService(MapService mapService, BeaconService beaconService, LedService ledService)
         {
             _beaconService = beaconService;
             _mapService = mapService;
+            _ledService = ledService;
+
             _random = new Random();
         }
 
         public Map Map { get; private set; }
 
-        public bool Start(Map map)
+        public async Task<bool> StartAsync(Map map)
         {
             if (_cancelSource != null) { return true; } // already started
             _cancelSource = new CancellationTokenSource();
+
+            if (!await _ledService.InitializeAsync())
+            {
+                return false;
+            }
 
             try
             {
@@ -65,12 +80,16 @@ namespace ThatPiHunt.Services
 
         public async Task<bool> PauseAsync()
         {
+            _ledService.PushLEDColor(Colors.Purple);
+
             _isPaused = true;
             return true;
         }
 
         public async Task<bool> ResumeAsync()
         {
+            _ledService.PopLEDColor();
+
             _isPaused = false;
             return true;
         }
@@ -84,6 +103,8 @@ namespace ThatPiHunt.Services
 
             var workerTask = _workerTask;
             _workerTask = null;
+
+            _ledService.Shutdown();
 
             cancelSource.Cancel();
             try
@@ -137,6 +158,9 @@ namespace ThatPiHunt.Services
                 // TODO: log this somehow...
             }
 
+            // Now, filter by the max reliable distance
+            currentBeaconList = currentBeaconList.Where(b => EstimateDistance(b.BaseTransmitPower ?? 0, b.SignalStrength) <= MaxReliableBeaconRange).ToList();
+
             // If we can't see any beacons right now (contestant values will tail off), there's nothing more to do here
             if (currentBeaconList.Any())
             {
@@ -153,6 +177,45 @@ namespace ThatPiHunt.Services
                                                .ToList();
                     rangeToPoi = poiByGoalDistance.First(p => currentBeaconList.Any(b => $"{b.Namespace}-{b.Instance}".Equals(p.Identifier)));
                     rangeToBeacon = currentBeaconList.First(b => $"{b.Namespace}-{b.Instance}".Equals(rangeToPoi.Identifier));
+                }
+
+                var rangeToDistance = Map.CalculateDistance(rangeToPoi, Map.CurrentGoal);
+                if (rangeToDistance > MaxReliableBeaconRange)
+                {
+                    _ledService.SetBlinkRate(TimeSpan.FromSeconds(5));
+                }
+                else if(rangeToDistance > (MaxReliableBeaconRange * 0.75))
+                {
+                    _ledService.SetBlinkRate(TimeSpan.FromSeconds(3));
+                }
+                else if(rangeToDistance > (MaxReliableBeaconRange * 0.4))
+                {
+                    _ledService.SetBlinkRate(TimeSpan.FromSeconds(1));
+                }
+                else if(rangeToDistance > 2)
+                {
+                    _ledService.SetBlinkRate(TimeSpan.FromSeconds(0.5));
+                }
+                else if(rangeToPoi != Map.CurrentGoal)
+                {
+                    _ledService.StopBlinking();
+                }
+                else
+                {
+                    _ledService.GoRainbow();
+                }
+
+                if (rangeToPoi == Map.CurrentGoal)
+                {
+                    _ledService.SetLEDColor(Colors.Green);
+                }
+                else if (rangeToPoi != null)
+                {
+                    _ledService.SetLEDColor(Colors.Blue);
+                }
+                else
+                {
+                    _ledService.SetLEDColor(Colors.Red);
                 }
 
                 // Calculate contestants current position given their visible points of interest
@@ -208,6 +271,24 @@ namespace ThatPiHunt.Services
                         }
                     }
 
+                    var rangeToDistance = Map.CalculateDistance(Map.Contestant.RangeToPointOfInterest, Map.CurrentGoal);
+                    if (rangeToDistance > 25)
+                    {
+                        _ledService.SetBlinkRate(TimeSpan.FromSeconds(5));
+                    }
+                    else if (rangeToDistance > 15)
+                    {
+                        _ledService.SetBlinkRate(TimeSpan.FromSeconds(3));
+                    }
+                    else if (rangeToDistance > 8)
+                    {
+                        _ledService.SetBlinkRate(TimeSpan.FromSeconds(1));
+                    }
+                    else
+                    {
+                        _ledService.GoRainbow();
+                    }
+
                     // Set the beacon we're homing to an appropriate color
                     Map.Contestant.RangeToPointOfInterest.Color = Map.Contestant.RangeToPointOfInterest == Map.CurrentGoal ? Colors.Green : Colors.Orange;
 
@@ -223,11 +304,14 @@ namespace ThatPiHunt.Services
             }
         }
 
+        /// <summary>
+        /// Provide estimated distance from the beacon in meters
+        /// </summary>
+        /// <param name="txPower"></param>
+        /// <param name="signalStrength"></param>
+        /// <returns></returns>
         private double EstimateDistance(int txPower, double signalStrength)
         {
-            // Distance Factor: 10 pixels / in, calculated distance is meters
-            // So (approx.)m * 100cm/m * 1in/2.54cm * 10 = 393.7
-            //var outputRatio = 1f; // 00 / 2.54;
             if (txPower == 0 || signalStrength == 0)
             {
                 return double.MaxValue; // can't know the distance
@@ -237,6 +321,17 @@ namespace ThatPiHunt.Services
             var linRatio = Math.Pow(10, ratio / 10);
             return Math.Sqrt(linRatio);
 
+            // BONUS POINTS:
+            // This is the version suggested by the Android Beacon library
+            // It doesn't seem to perform any better, and we haven't done
+            // the curve fitting to determine the Pi 3's signal strength 
+            // falloff curve.
+            //
+            // 1.  Gather some average signal strength measurements at known
+            //     intervals and use the MathNET.Numerics library to actually
+            //     fit a curve to your device, then see if the ranging works
+            //     better.  Talk about your findings.
+            //
             //var ratio = signalStrength * 1f / txPower;
             //if (ratio < 1f)
             //{
