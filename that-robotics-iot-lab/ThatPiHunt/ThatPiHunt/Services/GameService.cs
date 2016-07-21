@@ -19,6 +19,11 @@ namespace ThatPiHunt.Services
         public static double MaxReliableBeaconRange = 15;
 
         /// <summary>
+        /// The number of points needed to visit in order to 'win' the game
+        /// </summary>
+        public static int VisitedPointsToWin = 10;
+
+        /// <summary>
         /// What is our desired frame rate? [200ms -> 5 fps]
         /// </summary>
         public static int LoopIntervalMs = 200;
@@ -29,21 +34,24 @@ namespace ThatPiHunt.Services
         public static int LiveBeaconTimePeriodSec = 30;
 
         public event Func<IEnumerable<PointOfInterest>, Task> DrawBeaconRadii;
+        public event Func<Contestant, Task> GameComplete;
 
         private readonly BeaconService _beaconService;
         private readonly MapService _mapService;
         private readonly LedService _ledService;
+        private readonly PushButtonService _buttonService;
         private readonly Random _random;
 
         private CancellationTokenSource _cancelSource;
         private Task _workerTask;
         private bool _isPaused;
 
-        public GameService(MapService mapService, BeaconService beaconService, LedService ledService)
+        public GameService(MapService mapService, BeaconService beaconService, LedService ledService, PushButtonService buttonService)
         {
             _beaconService = beaconService;
             _mapService = mapService;
             _ledService = ledService;
+            _buttonService = buttonService;
 
             _random = new Random();
         }
@@ -55,7 +63,8 @@ namespace ThatPiHunt.Services
             if (_cancelSource != null) { return true; } // already started
             _cancelSource = new CancellationTokenSource();
 
-            if (!await _ledService.InitializeAsync())
+            if (!await _ledService.InitializeAsync() ||
+                !await _buttonService.InitializeAsync())
             {
                 return false;
             }
@@ -105,6 +114,7 @@ namespace ThatPiHunt.Services
             _workerTask = null;
 
             _ledService.Shutdown();
+            _buttonService.Shutdown();
 
             cancelSource.Cancel();
             try
@@ -131,7 +141,21 @@ namespace ThatPiHunt.Services
 
                 if (cancelToken.IsCancellationRequested) { break; }
 
-                await DrawBeaconRadii(Map.PointsOfInterest);
+                if (Map.CurrentGoal.EstimatedRadius <= 2 && DateTime.Now.Subtract(_buttonService.LastButtonPush() ?? DateTime.MinValue).TotalMinutes < 1)
+                {
+                    Map.Contestant.VisitedPointsOfInterest.Add(Tuple.Create(Map.CurrentGoal, DateTime.Now));
+                    _buttonService.ClearButtonPush();
+
+                    if (!AssignNextGoal())
+                    {
+                        await GameComplete(Map.Contestant);
+                        break;
+                    }
+                }
+                else
+                {
+                    await DrawBeaconRadii(Map.PointsOfInterest);
+                }
 
                 var sleepTime = LoopIntervalMs - (int)(DateTime.UtcNow - loopStart).TotalMilliseconds;
                 if (sleepTime > 0)
@@ -139,6 +163,26 @@ namespace ThatPiHunt.Services
                     await Task.Delay(sleepTime);
                 }
             }
+        }
+
+        private bool AssignNextGoal()
+        {
+            if (Map.Contestant.VisitedPointsOfInterest.Count >= VisitedPointsToWin)
+            {
+                return false;
+            }
+
+            var nextGoal = Map.PointsOfInterest
+                                         .Where(poi => !Map.Contestant.VisitedPointsOfInterest.Any(vpoi => poi == vpoi.Item1))
+                                         .OrderBy(poi => _random.Next())
+                                         .FirstOrDefault();
+            if (nextGoal == null)
+            {
+                return false;
+            }
+
+            Map.CurrentGoal = nextGoal;
+            return true;
         }
 
         private void UpdateGameState()

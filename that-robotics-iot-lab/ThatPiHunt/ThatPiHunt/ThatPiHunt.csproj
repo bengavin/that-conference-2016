@@ -101,6 +101,7 @@
     <Compile Include="Domain\PointOfInterest.cs" />
     <Compile Include="Services\GameService.cs" />
     <Compile Include="Services\LedService.cs" />
+    <Compile Include="Services\PushButtonService.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

@@ -43,6 +43,8 @@ namespace ThatPiHunt.Services
             if (gpio == null)
             {
                 _pinR = null;
+                _pinG = null;
+                _pinB = null;
                 return false;
             }
 
@@ -50,6 +52,9 @@ namespace ThatPiHunt.Services
 
             try
             {
+                _isOff = true;
+                _isRainbow = false;
+
                 _pinR = gpio.OpenPin(LED_PIN_R);
                 _pinR.Write(pinValue);
                 _pinR.SetDriveMode(GpioPinDriveMode.Output);
@@ -80,6 +85,15 @@ namespace ThatPiHunt.Services
             try
             {
                 _isInitialized = false;
+
+                if (_timer != null)
+                {
+                    _timer.Change(-1, -1);
+                    _timer.Dispose();
+                    _timer = null;
+                    _isOff = true;
+                    _isRainbow = false;
+                }
 
                 _pinR.Write(GpioPinValue.High);
                 _pinR.Dispose();
@@ -184,6 +198,8 @@ namespace ThatPiHunt.Services
 
             return true;
         }
+
+        public bool IsRainbow {  get { return _isRainbow; } }
 
         byte gpioRainbow = 0x0;
         byte gpioRainbowMax = 0x7;

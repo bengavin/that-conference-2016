@@ -215,11 +215,22 @@ namespace ThatPiHunt.Views
                 _watcher.Start();
 
                 StartButton.Content = "Pause";
-                _gameService = new GameService(_mapService, _beaconService, new LedService());
+                _gameService = new GameService(_mapService, _beaconService, new LedService(), new PushButtonService());
                 _gameService.DrawBeaconRadii += _gameService_DrawBeaconRadii;
+                _gameService.GameComplete += _gameService_GameComplete;
                 await _gameService.StartAsync(_map);
                 StopButton.IsEnabled = true;
             }
+        }
+
+        private async Task _gameService_GameComplete(Contestant winner)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                StopGame_Click(this, null);
+
+                // TODO: Actually display pathing sample information over the map
+            });
         }
 
         private async Task _gameService_DrawBeaconRadii(IEnumerable<PointOfInterest> pointsOfInterest)

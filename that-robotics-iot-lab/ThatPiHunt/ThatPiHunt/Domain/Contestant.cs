@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI;
 
@@ -10,6 +11,7 @@ namespace ThatPiHunt.Domain
         public Contestant()
         {
             Color = Colors.Red;
+            VisitedPointsOfInterest = new Collection<Tuple<PointOfInterest, DateTime>>();
         }
 
         public Color Color { get; set;}
