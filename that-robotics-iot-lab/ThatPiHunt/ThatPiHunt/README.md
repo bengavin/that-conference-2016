@@ -35,15 +35,15 @@ counselor will stop around and help you out.
 
 You'll start this process with the breadboard laid out table, with the side with holes facing upwards:
 
-![Assets/images/Breadboard.png]
+![Plain Breadboard](Assets/images/Breadboard.png)
 
 ### Setting up the LED
 For this exercise, we'll be preparing the LED to connect to the Raspberry Pi.  Start by inserting your LED
 into the breadboard.  You want to push the LED into the board in a way that each pin of the LED connects to
 a unique 'lane' on the breadboard.  The breadboard you're working with has 5 holes in each 'lane':
 
-![Assets/images/LED.png]
-![Assets/images/Breadboard-lanes.png]
+![Actual LED](Assets/images/LED.png)
+![LED on Breadboard](Assets/images/Breadboard-lanes.png)
 
 When you place the LED into the board, make sure the 'cutoff' corner is pointing 'upward' or 'away from you'
 when you look at the breadboard laying on the table.  This will cause the right-most lane to tie to the power
@@ -57,7 +57,7 @@ shine at about the same level.  Tie the 220Ω resistor to the Red leg (the left-
 resistors to the center two lanes by inserting one end of the resistor into the lowest hole in the lane, and
 jumping across the gap to the corresponding lane.
 
-![Assets/images/AddingResistors.png]
+![Adding the resistors](Assets/images/AddingResistors.png)
 
 ### Adding the Push Button
 The push buttons we're using for this project have 4 'legs'.  When connecting the push button, you may find it
@@ -65,7 +65,7 @@ easiest to insert two of the legs into the lower 'bank' of lanes on the breadboa
 in the 'gap' in the breadboard.  When choosing which two lanes to insert into the breadboard, make sure to pick
 legs that emerge from the same 'side' of the push button.
 
-![Assets/images/PushButton.png]
+![Adding the push button](Assets/images/PushButton.png)
 
 ### Add the Wires
 Now that the primary components are on the board, it's time to add some wires to connect the board to the Raspberry
@@ -75,24 +75,24 @@ picture.  When inserting the wires into the board, use the male end of the wire 
 hole in the breadboard.  This should leave the female end of the wire hanging free, to be connected to the Pi in the
 next step.
 
-![Assets/images/Wires.png]
+![Breadboard Wires](Assets/images/Wires.png)
 
 ### Add the Raspberry Pi
 Before we see a picture of the circuit, let's take a look at the pins on the Raspberry Pi (when viewing the Pi
 with the GPIO pinouts on top):
 
-![Assets/images/PiPinout.png]
+![Pi 2/3 Pinout](Assets/images/PiPinout.png)
 ([image courtesy of raspberrypi.org](https://www.raspberrypi.org/documentation/usage/gpio-plus-and-raspi2/), via [Creative Commons License](https://www.raspberrypi.org/creative-commons/))
 
 For this step, the diagram will use GPIO pins 5,6,13 and 26 (you are free to use other GPIO pins, just remember to
 write down which ones, because you'll need the pin numbers for the coding side).  We'll also be using the 3.3v
 power source and ground pins (again, the diagrams use the lower right pin for ground, and and lower left pin for 3.3v).
 
-![Assets/images/WiringThePi.png]
+![Setting up the wiring](Assets/images/WiringThePi.png)
 
 ### Hardware - Achievement Unlocked!
 
-![Assets/images/HardwareComplete.png]
+![Complete Hardware](Assets/images/HardwareComplete.png)
 
 Now that you have the hardware assembled, it's time to move on to the software side, so get your Visual Studio ready baby!
 
