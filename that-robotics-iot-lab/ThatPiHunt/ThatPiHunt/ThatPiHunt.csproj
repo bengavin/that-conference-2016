@@ -121,6 +121,7 @@
     <Content Include="Assets\Images\Breadboard-lanes.png" />
     <Content Include="Assets\Images\Breadboard.png" />
     <Content Include="Assets\Images\HardwareComplete.png" />
+    <Content Include="Assets\Images\LED.png" />
     <Content Include="Assets\Images\PiPinout.png" />
     <Content Include="Assets\Images\PushButton.png" />
     <Content Include="Assets\Images\Wires.png" />
