@@ -117,6 +117,14 @@
     <None Include="ThatPiHunt_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Images\AddingResistors.png" />
+    <Content Include="Assets\Images\Breadboard-lanes.png" />
+    <Content Include="Assets\Images\Breadboard.png" />
+    <Content Include="Assets\Images\HardwareComplete.png" />
+    <Content Include="Assets\Images\PiPinout.png" />
+    <Content Include="Assets\Images\PushButton.png" />
+    <Content Include="Assets\Images\Wires.png" />
+    <Content Include="Assets\Images\WiringThePi.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
