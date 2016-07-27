@@ -97,3 +97,90 @@ power source and ground pins (again, the diagrams use the lower right pin for gr
 Now that you have the hardware assembled, it's time to move on to the software side, so get your Visual Studio ready baby!
 
 <a name="software" />
+## About the Software
+No IoT solution would be complete without a software component.  Whether that is through
+firmware burned onto a chip, or software loaded into a devices' storage / memory, software
+is what links the hardware with the rest of the internet.  For this project, we'll be adapting
+a pre-built piece of software to match with how we configured [or will configure for you Software 
+Geeks] our Raspberry Pi and hardware kit.
+
+The software does a few things:
+
+* It encodes the 'map' that represents the physical world into something the software can use
+* It utilizes the Bluetooth LE hardware of your Raspberry Pi to detect beacons
+* It indicates to the user (via the LED) how close the beacon of interest is
+* It accepts input from the user to register visiting a beacon (via the push button)
+
+As a software geek, you can choose how much control you want to take from the program.  You
+can decide to change how the software finds beacons, or how it translates the beacon signals
+into physical output for the user to see / hear.  By default, the software will do the following:
+
+* When started, the application loads the map and begins scanning for beacons
+* A beacon is selected (randomly) as the current target beacon
+* When a beacon is found, the LED blinks Blue if tracking against a non-target beacon, and Green if tracking against the target beacon
+* The LED blinks faster the closer you move to the target
+* When the Raspberry Pi is within capture distance of the beacon, the LED begins a rainbow light cycle
+* When the LED has 'gone rainbow', clicking the push button captures the current target and selects a new target from the map
+* Once 10 targets are captured, the LED shuts off, indicating your quest is complete, return to the check-in table for more info!
+
+### Getting the Software
+Go to (https://github.com/bengavin/that-conference-2016/tree/pihunt) and click 'Open in Visual 
+Studio'.  This will pull the code onto your local computer, and give you the opportunity to open the
+'ThatPiHunt' solution.
+
+![Assets/Images/OpenInVisualStudio.png]
+
+```
+NOTE: You may need to setup a 'repository' for the software on the local computer.  This is just
+a special directory on your computer where the code will be placed (e.g. C:\Source\ThatRepo).  Go
+ahead and create one and when Visual Studio asks, just select the directory that you created.
+```
+
+### Opening the Solution
+Now, from Visual Studio, open the 'ThatPiHunt.sln' file, this will open the solution on your
+computer and you will see something that looks like this:
+
+![Assets/Images/ThatPiHuntSolution.png]
+
+* The 'Assets' folder contains images that are used by the application during runtime, these
+can be safely ignored, as we're not interested in what the application itself looks like right now.
+
+* The 'Domain' folder contains classes that define the application's view of the Map, Contestant (you)
+and PointOfInterest (a beacon).  These classes likely won't need any changes.
+
+* The 'Services' folder contains the bulk of the program logic.  If you're going to make changes
+to the program, it's likely that they'll need to be made here.
+
+** The 'BeaconService' class handles keeping track of the beacons, unless you want to get way
+down in the weeds, you probably don't need to worry about much in here.
+
+** The 'GameService' class handles the game loop, and gathering data from and sending control messages
+to other services in the application.  Generally in response to your movement in relation to the beacons.
+
+** The 'LedService' class controls the LEDs, this is where you'll change what pin you plugged your LED
+hardware into (see the const(s) at the top of the file).
+
+** The 'PushButtonService' class controls the push button and records events from the button.  This is where
+you'll need to update if you used a different pin for the button (see the const(s) at the top of the file).
+
+* The 'Views' folder contains the main user interface for the program.  We don't need to worry about
+this right now, as your Raspberry Pi isn't hooked up to a monitor, so there's nothing to see.
+
+### Taking a Hardware Break
+If you're a 'Software Geek' and have not yet assembled your hardware, now is the time to do it.  Your
+code won't run without the Raspberry Pi, and it won't do anything interesting if you don't have the hardware
+hooked up to the Pi, so do that quick and stop back down here when you're ready.
+
+[Be a Hardware Geek](#hardware)
+
+### Making your Changes and Running the Code
+As you look through the code, there are various comments (indicated by '//' or '/* ... */') that talk about
+where changes can be made (or need to be made, depending on your hardware setup).  Once you've made sure
+you're talking to the right pins for the LED/Push Button, you're ready to 'deploy' your code to the
+Raspberry Pi.  Raise your hand and a lab counselor will stop over and help you with this step.  It involves
+hooking your Raspberry Pi up to a network wire and setting up Visual Studio to talk with it.
+
+Once your code is running, go capture the beacon in the corner of the room to test that your setup is working
+properly.  Once that's working, you're off to the races, see you when you return!
+
+Oh, and 'Good Luck'!

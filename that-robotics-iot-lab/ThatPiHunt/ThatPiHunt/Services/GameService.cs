@@ -37,7 +37,6 @@ namespace ThatPiHunt.Services
         public event Func<Contestant, Task> GameComplete;
 
         private readonly BeaconService _beaconService;
-        private readonly MapService _mapService;
         private readonly LedService _ledService;
         private readonly PushButtonService _buttonService;
         private readonly Random _random;
@@ -46,10 +45,9 @@ namespace ThatPiHunt.Services
         private Task _workerTask;
         private bool _isPaused;
 
-        public GameService(MapService mapService, BeaconService beaconService, LedService ledService, PushButtonService buttonService)
+        public GameService(BeaconService beaconService, LedService ledService, PushButtonService buttonService)
         {
             _beaconService = beaconService;
-            _mapService = mapService;
             _ledService = ledService;
             _buttonService = buttonService;
 

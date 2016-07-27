@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="Assets\Sketches\ThatPiHunt.fzz" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +108,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BeaconService.cs" />
-    <Compile Include="Services\MapService.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -122,8 +122,10 @@
     <Content Include="Assets\Images\Breadboard.png" />
     <Content Include="Assets\Images\HardwareComplete.png" />
     <Content Include="Assets\Images\LED.png" />
+    <Content Include="Assets\Images\OpenInVisualStudio.png" />
     <Content Include="Assets\Images\PiPinout.png" />
     <Content Include="Assets\Images\PushButton.png" />
+    <Content Include="Assets\Images\ThatPiHuntSolution.png" />
     <Content Include="Assets\Images\Wires.png" />
     <Content Include="Assets\Images\WiringThePi.png" />
     <Content Include="Properties\Default.rd.xml" />

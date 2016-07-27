@@ -27,7 +27,6 @@ namespace ThatPiHunt.Views
         private bool _isMarking;
         private Map _map;
         private BeaconService _beaconService = new BeaconService();
-        private MapService _mapService = new MapService();
         private GameService _gameService;
 
         private List<UIElement> _beaconEllipses = new List<UIElement>();
@@ -58,77 +57,6 @@ namespace ThatPiHunt.Views
         private async void Receive_Watcher_Notification(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
             await _beaconService.RegisterBeaconSightingAsync(args.Advertisement, args.BluetoothAddress, args.Timestamp, args.RawSignalStrengthInDBm);
-            //var serviceUuids = "Service UUID: ";
-            //if (args.Advertisement.ServiceUuids != null && args.Advertisement.ServiceUuids.Any())
-            //{
-            //    serviceUuids = String.Join("; ", args.Advertisement.ServiceUuids.Select(uid => uid.ToString()));
-            //}
-
-            //var manufacturerData = $"Manufacturer Data: {Environment.NewLine}";
-            //if (args.Advertisement.ManufacturerData != null && args.Advertisement.ManufacturerData.Count > 0)
-            //{
-            //    foreach(var dataPoint in args.Advertisement.ManufacturerData)
-            //    {
-            //        var data = new byte[dataPoint.Data.Length];
-            //        using (var reader = DataReader.FromBuffer(dataPoint.Data))
-            //        {
-            //            reader.ReadBytes(data);
-            //        }
-
-            //        manufacturerData += String.Format("0x{0}: {1}", dataPoint.CompanyId.ToString("X"), BitConverter.ToString(data)) + Environment.NewLine;
-            //    }
-            //}
-
-            //var dataSectionData = $"Data Sections: {Environment.NewLine}";
-            //if (args.Advertisement.DataSections != null && args.Advertisement.DataSections.Count > 0)
-            //{
-            //    foreach(var dataSection in args.Advertisement.DataSections)
-            //    {
-            //        var data = new byte[dataSection.Data.Length];
-            //        using (var reader = DataReader.FromBuffer(dataSection.Data))
-            //        {
-            //            reader.ReadBytes(data);
-            //        }
-
-            //        if (dataSection.DataType == 0x16)
-            //        {
-            //            // This appears to be how the Gimbal Beacons send us the URL
-            //            if (data.Length >= 3 && data[0] == 0xAA && data[1] == 0xFE)
-            //            {
-            //                if (data.Length > 4 && data[2] == 0x10 && data[4] <= 0x03)
-            //                {
-            //                    var prefix = new string[]
-            //                    {
-            //                    "http://www.",
-            //                    "https://www.",
-            //                    "http://",
-            //                    "https://"
-            //                    };
-
-            //                    dataSectionData += $"Url Detected (Transmit Power: {data[3]}dBm): " + prefix[data[4]] + (data.Length > 5 ? System.Text.Encoding.UTF8.GetString(data, 5, data.Length - 5) : String.Empty) + Environment.NewLine;
-            //                }
-            //                else if (data[2] == 0x20 && data.Length == 16)
-            //                {
-            //                    dataSectionData += $"TLM Data Detected (Version: {data[3]}), Battery Voltage: {BitConverter.ToInt16(new[] { data[5], data[4] }, 0)}, Temperature: {data[6] + ((float)data[7] / 256f)}, Publish Count: {BitConverter.ToInt32(new[] { data[11], data[10], data[9], data[8] }, 0)}, Seconds alive: {BitConverter.ToInt32(new[] { data[15], data[14], data[13], data[12] }, 0)}{Environment.NewLine}";
-            //                }
-            //                else
-            //                {
-            //                    dataSectionData += $"Error {dataSection.DataType.ToString("X")}: {BitConverter.ToString(data)}{Environment.NewLine}";
-            //                }
-            //            }
-            //            else
-            //            {
-            //                dataSectionData += $"!{dataSection.DataType.ToString("X")}: {BitConverter.ToString(data)}{Environment.NewLine}";
-            //            }
-            //        }
-            //        else
-            //        {
-            //            dataSectionData += $"{dataSection.DataType.ToString("X")}: {BitConverter.ToString(data)}{Environment.NewLine}";
-            //        }
-            //    }
-            //}
-
-            //System.Diagnostics.Debug.WriteLine($"Notification Received: {args.AdvertisementType}, {args.BluetoothAddress}, {args.RawSignalStrengthInDBm}, {args.Timestamp}, {args.Advertisement.LocalName} {Environment.NewLine} {dataSectionData} {manufacturerData} {serviceUuids}");
         }
 
         private async void Mark_Click(object sender, RoutedEventArgs e)
@@ -163,8 +91,6 @@ namespace ThatPiHunt.Views
                     new PointOfInterest { Identifier = "20160809000000000000-000000000005", Position = new Point(3.962, 3.658) }
                 }
             };
-
-            //MapService.GenerateMap((int)MapCanvas.ActualWidth, (int)MapCanvas.ActualHeight, 10);
 
             var renderRatio = 393.701; // pixels / m
             var ratio = Math.Min(MapViewer.ActualWidth / MapImage.DesiredSize.Width, MapViewer.ActualHeight / MapImage.DesiredSize.Height);
@@ -215,7 +141,7 @@ namespace ThatPiHunt.Views
                 _watcher.Start();
 
                 StartButton.Content = "Pause";
-                _gameService = new GameService(_mapService, _beaconService, new LedService(), new PushButtonService());
+                _gameService = new GameService(_beaconService, new LedService(), new PushButtonService());
                 _gameService.DrawBeaconRadii += _gameService_DrawBeaconRadii;
                 _gameService.GameComplete += _gameService_GameComplete;
                 await _gameService.StartAsync(_map);
