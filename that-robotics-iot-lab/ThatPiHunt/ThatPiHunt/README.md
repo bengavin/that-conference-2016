@@ -128,7 +128,7 @@ Go to (https://github.com/bengavin/that-conference-2016/tree/pihunt) and click '
 Studio'.  This will pull the code onto your local computer, and give you the opportunity to open the
 'ThatPiHunt' solution.
 
-![Assets/Images/OpenInVisualStudio.png]
+![Open in Visual Studio](Assets/Images/OpenInVisualStudio.png)
 
 ```
 NOTE: You may need to setup a 'repository' for the software on the local computer.  This is just
@@ -140,7 +140,7 @@ ahead and create one and when Visual Studio asks, just select the directory that
 Now, from Visual Studio, open the 'ThatPiHunt.sln' file, this will open the solution on your
 computer and you will see something that looks like this:
 
-![Assets/Images/ThatPiHuntSolution.png]
+![Solution Layout](Assets/Images/ThatPiHuntSolution.png)
 
 * The 'Assets' folder contains images that are used by the application during runtime, these
 can be safely ignored, as we're not interested in what the application itself looks like right now.
@@ -151,17 +151,17 @@ and PointOfInterest (a beacon).  These classes likely won't need any changes.
 * The 'Services' folder contains the bulk of the program logic.  If you're going to make changes
 to the program, it's likely that they'll need to be made here.
 
-** The 'BeaconService' class handles keeping track of the beacons, unless you want to get way
-down in the weeds, you probably don't need to worry about much in here.
+  * The 'BeaconService' class handles keeping track of the beacons, unless you want to get way
+    down in the weeds, you probably don't need to worry about much in here.
 
-** The 'GameService' class handles the game loop, and gathering data from and sending control messages
-to other services in the application.  Generally in response to your movement in relation to the beacons.
+  * The 'GameService' class handles the game loop, and gathering data from and sending control messages
+    to other services in the application.  Generally in response to your movement in relation to the beacons.
 
-** The 'LedService' class controls the LEDs, this is where you'll change what pin you plugged your LED
-hardware into (see the const(s) at the top of the file).
+  * The 'LedService' class controls the LEDs, this is where you'll change what pin you plugged your LED
+    hardware into (see the const(s) at the top of the file).
 
-** The 'PushButtonService' class controls the push button and records events from the button.  This is where
-you'll need to update if you used a different pin for the button (see the const(s) at the top of the file).
+  * The 'PushButtonService' class controls the push button and records events from the button.  This is where
+    you'll need to update if you used a different pin for the button (see the const(s) at the top of the file).
 
 * The 'Views' folder contains the main user interface for the program.  We don't need to worry about
 this right now, as your Raspberry Pi isn't hooked up to a monitor, so there's nothing to see.
