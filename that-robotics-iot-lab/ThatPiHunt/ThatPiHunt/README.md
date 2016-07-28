@@ -20,11 +20,11 @@ start with the 'Software Geek' path.
 ## Building the Hardware
 Take a moment to review the supplies you received.  You should have the following parts:
 
-* 1 - 220Ω Resistor (red, red, brown, gold)
-* 2 - 330Ω Resistors (orange, orange, brown, gold)
+* 1 - 220Ω Resistor [larger] (red, red, brown, gold)
+* 2 - 330Ω Resistors [smaller] (orange, orange, brown, gold)
 * 1 - Push Button Switch
 * 1 - RGB Led
-* 6 - Male - Female Jumper Wires
+* 6 - Male - Female Jumper Wires (various colors)
 * 1 - Half-size prototyping breadboard
 * (optional) 1 - MicroSD card with a bootable Windows 10 IoT image
 

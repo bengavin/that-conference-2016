@@ -126,6 +126,7 @@
     <Content Include="Assets\Images\PiPinout.png" />
     <Content Include="Assets\Images\PushButton.png" />
     <Content Include="Assets\Images\ThatPiHuntSolution.png" />
+    <Content Include="Assets\Images\ThatPiHunt_Full.png" />
     <Content Include="Assets\Images\Wires.png" />
     <Content Include="Assets\Images\WiringThePi.png" />
     <Content Include="Properties\Default.rd.xml" />
