@@ -24,7 +24,17 @@
             <Canvas x:Name="MapCanvas" Background="Transparent" IsHitTestVisible="False">
             </Canvas>
         </Grid>
+        <TextBlock x:Name="ResultsText" Grid.Row="0" Grid.Column="1" />
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" >
+            <TextBlock Text="Test:" />
+            <Button x:Name="RedButton" Content="Red" Click="RedButton_Click" />
+            <Button x:Name="GreenButton" Content="Green" Click="GreenButton_Click" />
+            <Button x:Name="BlueButton" Content="Blue" Click="BlueButton_Click" />
+            <Button x:Name="WhiteButton" Content="White" Click="WhiteButton_Click" />
+            <Button x:Name="OffButton" Content="Off" Click="OffButton_Click" />
+            <Button x:Name="PushButton" Content="Push Btn" Click="PushButton_Click" />
+
+            <TextBlock Text="Game:" Margin="0,20,0,0" />
             <Button Content="Generate Map" Click="GenerateMap_Click" />
             <Button x:Name="StartButton" Content="Start" Click="StartGame_Click" />
             <Button x:Name="StopButton" Content="Stop" Click="StopGame_Click" IsEnabled="False" />

@@ -16,7 +16,7 @@ namespace ThatPiHunt.Services
         /// this many meters (or more), even if we think we can see
         /// them
         /// </summary>
-        public static double MaxReliableBeaconRange = 15;
+        public static double MaxReliableBeaconRange = 20;
 
         /// <summary>
         /// The number of points needed to visit in order to 'win' the game
@@ -37,15 +37,15 @@ namespace ThatPiHunt.Services
         public event Func<Contestant, Task> GameComplete;
 
         private readonly BeaconService _beaconService;
-        private readonly LedService _ledService;
-        private readonly PushButtonService _buttonService;
+        private readonly ILedService _ledService;
+        private readonly IPushButtonService _buttonService;
         private readonly Random _random;
 
         private CancellationTokenSource _cancelSource;
         private Task _workerTask;
         private bool _isPaused;
 
-        public GameService(BeaconService beaconService, LedService ledService, PushButtonService buttonService)
+        public GameService(BeaconService beaconService, ILedService ledService, IPushButtonService buttonService)
         {
             _beaconService = beaconService;
             _ledService = ledService;
@@ -139,7 +139,7 @@ namespace ThatPiHunt.Services
 
                 if (cancelToken.IsCancellationRequested) { break; }
 
-                if (Map.CurrentGoal.EstimatedRadius <= 2 && DateTime.Now.Subtract(_buttonService.LastButtonPush() ?? DateTime.MinValue).TotalMinutes < 1)
+                if (Map.CurrentGoal.EstimatedRadius <= 2 && DateTime.Now.Subtract(_buttonService.LastButtonPush ?? DateTime.MinValue).TotalMinutes < 1)
                 {
                     Map.Contestant.VisitedPointsOfInterest.Add(Tuple.Create(Map.CurrentGoal, DateTime.Now));
                     _buttonService.ClearButtonPush();

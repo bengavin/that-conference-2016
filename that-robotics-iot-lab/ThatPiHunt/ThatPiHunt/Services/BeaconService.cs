@@ -94,14 +94,35 @@ namespace ThatPiHunt.Services
                                 newSighting.BatteryVoltage = BitConverter.ToInt16(new[] { data[5], data[4] }, 0);
                                 newSighting.Temperature = Convert.ToInt32(data[6] + ((float)data[7] / 256f));
                             }
-                            else if (data[2] == 0x00 && data.Length >= 22)
+                            else if (data[2] == 0x00 && data.Length >= 20)
                             {
                                 // this is the namespace/instance broadcast
-                                newSighting.BaseTransmitPower = (sbyte)data[3]; // (sbyte)((sbyte)data[3] + 41); // TX power at 0 meters
+                                // This doesn't work right, so I'm just fixing it at -60 dBm (measured value on iPad)
+                                //newSighting.BaseTransmitPower = (sbyte)data[3]; // (sbyte)((sbyte)data[3] + 41); // TX power at 0 meters
+                                newSighting.BaseTransmitPower = -60;
                                 newSighting.Namespace = BitConverter.ToString(data, 4, 10).Replace("-", "");
                                 newSighting.Instance = BitConverter.ToString(data, 14, 6).Replace("-", "");
                             }
                         }
+                    }
+                }
+            }
+
+            if (beaconData.ManufacturerData != null && beaconData.ManufacturerData.Count > 0)
+            {
+                foreach (var manufacturerData in beaconData.ManufacturerData)
+                {
+                    // This appears to be Kontakt
+                    if (manufacturerData.CompanyId == 0x4C && 
+                        manufacturerData.Data.Length >= 18 &&
+                        manufacturerData.Data[0] == 0x02 && 
+                        manufacturerData.Data[1] == 0x15)
+                    {
+                        newSighting.BaseTransmitPower = (sbyte)manufacturerData.Data[manufacturerData.Data.Length - 1];
+                        var uuidString = BitConverter.ToString(manufacturerData.Data, 2, 16).Replace("-", "");
+                        newSighting.Uuid = Guid.Parse(uuidString);
+                        newSighting.Namespace = newSighting.Uuid.ToString("D").Substring(0, 23);
+                        newSighting.Instance = newSighting.Uuid.ToString("D").Substring(24, 12);
                     }
                 }
             }

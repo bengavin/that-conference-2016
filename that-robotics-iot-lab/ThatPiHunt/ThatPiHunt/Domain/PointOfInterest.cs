@@ -15,6 +15,7 @@ namespace ThatPiHunt.Domain
         }
 
         public string BeaconKey { get; set; }
+        public string Character { get; internal set; }
         public Color Color { get; set; }
         public double? EstimatedRadius { get; set; }
     }

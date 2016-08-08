@@ -6,12 +6,23 @@ using Windows.Devices.Gpio;
 
 namespace ThatPiHunt.Services
 {
-    public class PushButtonService
+    public interface IPushButtonService
+    {
+        Task<bool> InitializeAsync();
+        bool Shutdown();
+        DateTime? LastButtonPush { get; }
+        void ClearButtonPush();
+        event EventHandler ButtonPushed;
+    }
+
+    public class PushButtonService : IPushButtonService
     {
         private const int PUSH_BUTTON_PIN = 26;
         private GpioPin _pushButtonPin;
         private bool _isInitialized = false;
         private DateTime? _lastButtonPush;
+
+        public event EventHandler ButtonPushed = delegate { };
 
         public async Task<bool> InitializeAsync()
         {
@@ -90,12 +101,16 @@ namespace ThatPiHunt.Services
             {
                 // Button was pushed
                 _lastButtonPush = DateTime.Now;
+                ButtonPushed(this, EventArgs.Empty);
             }
         }
 
-        public DateTime? LastButtonPush()
+        public DateTime? LastButtonPush
         {
-            return _lastButtonPush;
+            get
+            {
+                return _lastButtonPush;
+            }
         }
 
         public void ClearButtonPush()

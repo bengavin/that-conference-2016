@@ -30,6 +30,8 @@ namespace ThatPiHunt.Views
         private GameService _gameService;
 
         private List<UIElement> _beaconEllipses = new List<UIElement>();
+        private LedService _ledService;
+        private PushButtonService _pushButtonService;
 
         public MainPage()
         {
@@ -48,7 +50,7 @@ namespace ThatPiHunt.Views
             {
                 _beaconService.ClearBeacons();
                 _watcher = new Windows.Devices.Bluetooth.Advertisement.BluetoothLEAdvertisementWatcher();
-                _watcher.ScanningMode = BluetoothLEScanningMode.Passive;
+                _watcher.ScanningMode = BluetoothLEScanningMode.Active;
                 _watcher.Received += Receive_Watcher_Notification;
                 _watcher.Start();
             }
@@ -84,11 +86,18 @@ namespace ThatPiHunt.Views
                 Contestant = new Contestant() { Position = new Point(1200, 1200) },
                 PointsOfInterest = new List<PointOfInterest>
                 {
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000001", Position = new Windows.Foundation.Point(7.600, 0.667) },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000002", Position = new Point(2.743, 0.100) },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000003", Position = new Point(1.219, 6.706) },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000004", Position = new Point(7.315, 6.401) },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000005", Position = new Point(3.962, 3.658) }
+                    //new PointOfInterest { Identifier = "20160809000000000000-000000000001", Position = new Point(7.600, 0.667), Character = "Pikachu" },
+                    //new PointOfInterest { Identifier = "20160809000000000000-000000000002", Position = new Point(2.743, 0.100), Character = "Bellsprout" },
+                    //new PointOfInterest { Identifier = "20160809000000000000-000000000003", Position = new Point(1.219, 6.706), Character = "Piplup" },
+                    //new PointOfInterest { Identifier = "20160809000000000000-000000000004", Position = new Point(7.315, 6.401), Character = "Snivey" },
+                    //new PointOfInterest { Identifier = "20160809000000000000-000000000005", Position = new Point(3.962, 3.658), Character = "Pansage" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000011", Position = new Point(7.600, 0.667), Character = "Pikachu" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000012", Position = new Point(2.743, 0.100), Character = "Bellsprout" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000013", Position = new Point(1.000, 3.000), Character = "Piplup" },
+                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000014", Position = new Point(1.500, 3.500), Character = "Gilgar" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000018", Position = new Point(1.219, 6.706), Character = "Snivey" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000019", Position = new Point(7.315, 6.401), Character = "Pansage" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000020", Position = new Point(3.962, 3.658), Character = "Dancine" },
                 }
             };
 
@@ -113,6 +122,18 @@ namespace ThatPiHunt.Views
 
         private async void StartGame_Click(object sender, RoutedEventArgs e)
         {
+            // If we were testing, run this code please
+            if (_ledService != null)
+            {
+                OffButton_Click(sender, e);
+                RedButton.IsEnabled =
+                    BlueButton.IsEnabled =
+                    GreenButton.IsEnabled = 
+                    WhiteButton.IsEnabled =
+                    OffButton.IsEnabled
+                    = false;
+            }
+
             if ("Pause".Equals((string)StartButton.Content))
             {
                 StartButton.Content = "Resume";
@@ -129,19 +150,24 @@ namespace ThatPiHunt.Views
             {
                 _beaconService.ClearBeacons();
                 _watcher = new Windows.Devices.Bluetooth.Advertisement.BluetoothLEAdvertisementWatcher();
-                _watcher.SignalStrengthFilter = new Windows.Devices.Bluetooth.BluetoothSignalStrengthFilter
-                {
-                    OutOfRangeThresholdInDBm = -80,
-                    OutOfRangeTimeout = TimeSpan.FromSeconds(30),
-                    SamplingInterval = TimeSpan.FromMilliseconds(100),
-                    InRangeThresholdInDBm = -70
-                };
+                //_watcher.SignalStrengthFilter = new Windows.Devices.Bluetooth.BluetoothSignalStrengthFilter
+                //{
+                //    OutOfRangeThresholdInDBm = -80,
+                //    OutOfRangeTimeout = TimeSpan.FromSeconds(30),
+                //    SamplingInterval = TimeSpan.FromMilliseconds(100),
+                //    InRangeThresholdInDBm = -70
+                //};
                 _watcher.ScanningMode = BluetoothLEScanningMode.Passive;
                 _watcher.Received += Receive_Watcher_Notification;
                 _watcher.Start();
 
                 StartButton.Content = "Pause";
+#if HAS_GPIO
+
                 _gameService = new GameService(_beaconService, new LedService(), new PushButtonService());
+#else
+                _gameService = new GameService(_beaconService, new FakeLedService(), new FakePushButtonService());
+#endif
                 _gameService.DrawBeaconRadii += _gameService_DrawBeaconRadii;
                 _gameService.GameComplete += _gameService_GameComplete;
                 await _gameService.StartAsync(_map);
@@ -153,9 +179,18 @@ namespace ThatPiHunt.Views
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                StopGame_Click(this, null);
-
                 // TODO: Actually display pathing sample information over the map
+
+                var resultsText = "Captured:" + Environment.NewLine;
+
+                foreach(var item in _gameService.Map.Contestant.VisitedPointsOfInterest)
+                {
+                    resultsText += item.Item1.Character + Environment.NewLine; 
+                }
+
+                ResultsText.Text = resultsText;
+
+                StopGame_Click(this, null);
             });
         }
 
@@ -216,7 +251,90 @@ namespace ThatPiHunt.Views
             _watcher.Received -= Receive_Watcher_Notification;
             _watcher = null;
 
+            RedButton.IsEnabled =
+                BlueButton.IsEnabled =
+                GreenButton.IsEnabled =
+                WhiteButton.IsEnabled =
+                OffButton.IsEnabled
+                = true;
+
             StartButton.Content = "Start";
+        }
+
+        private async void RedButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ledService == null)
+            {
+                _ledService = new LedService();
+                await _ledService.InitializeAsync();
+            }
+
+            _ledService.SetLEDColor(Colors.Red);
+        }
+
+        private async void GreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ledService == null)
+            {
+                _ledService = new LedService();
+                await _ledService.InitializeAsync();
+            }
+
+            _ledService.SetLEDColor(Colors.Green);
+        }
+
+        private async void BlueButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ledService == null)
+            {
+                _ledService = new LedService();
+                await _ledService.InitializeAsync();
+            }
+
+            _ledService.SetLEDColor(Colors.Blue);
+        }
+
+        private async void WhiteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ledService == null)
+            {
+                _ledService = new LedService();
+                await _ledService.InitializeAsync();
+            }
+
+            _ledService.SetLEDColor(Colors.White);
+        }
+
+        private void OffButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ledService != null)
+            {
+                _ledService.Shutdown();
+                _ledService = null;
+            }
+        }
+
+        private async void PushButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pushButtonService == null)
+            {
+                _pushButtonService = new PushButtonService();
+                await _pushButtonService.InitializeAsync();
+                PushButton.IsEnabled = false;
+
+                _pushButtonService.ButtonPushed += _pushButtonService_ButtonPushed;
+            }
+
+        }
+
+        private async void _pushButtonService_ButtonPushed(object sender, EventArgs e)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                PushButton.IsEnabled = true;
+                _pushButtonService.Shutdown();
+                _pushButtonService = null;
+            });
         }
     }
 }
