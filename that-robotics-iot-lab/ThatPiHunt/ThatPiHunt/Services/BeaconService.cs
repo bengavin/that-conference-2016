@@ -108,7 +108,7 @@ namespace ThatPiHunt.Services
                 }
             }
 
-            if (beaconData.ManufacturerData != null && beaconData.ManufacturerData.Count > 0)
+            if (String.IsNullOrWhiteSpace(newSighting.Namespace) && beaconData.ManufacturerData != null && beaconData.ManufacturerData.Count > 0)
             {
                 foreach (var manufacturerData in beaconData.ManufacturerData)
                 {
