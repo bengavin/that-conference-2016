@@ -19,7 +19,7 @@
 
         <Grid Grid.RowSpan="2" HorizontalAlignment="Left">
             <Viewbox x:Name="MapViewer" Stretch="Uniform" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <Image x:Name="MapImage" Source="ms-appx:///Assets/Sample Layout.png" PointerReleased="Image_PointerReleased" HorizontalAlignment="Left" />
+                <Image x:Name="MapImage" Source="ms-appx:///Assets/Images/conf-floor-plan.png" PointerReleased="Image_PointerReleased" HorizontalAlignment="Left" />
             </Viewbox>
             <Canvas x:Name="MapCanvas" Background="Transparent" IsHitTestVisible="False">
             </Canvas>

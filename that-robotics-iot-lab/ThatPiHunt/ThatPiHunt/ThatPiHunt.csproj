@@ -125,11 +125,13 @@
     <Content Include="Assets\Images\AddingResistors.png" />
     <Content Include="Assets\Images\Breadboard-lanes.png" />
     <Content Include="Assets\Images\Breadboard.png" />
+    <Content Include="Assets\Images\conf-floor-plan.png" />
     <Content Include="Assets\Images\HardwareComplete.png" />
     <Content Include="Assets\Images\LED.png" />
     <Content Include="Assets\Images\OpenInVisualStudio.png" />
     <Content Include="Assets\Images\PiPinout.png" />
     <Content Include="Assets\Images\PushButton.png" />
+    <Content Include="Assets\Images\thatmap.png" />
     <Content Include="Assets\Images\ThatPiHuntSolution.png" />
     <Content Include="Assets\Images\ThatPiHunt_Full.png" />
     <Content Include="Assets\Images\Wires.png" />

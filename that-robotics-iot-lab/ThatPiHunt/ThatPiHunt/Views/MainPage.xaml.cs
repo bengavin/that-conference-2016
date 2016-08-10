@@ -76,7 +76,18 @@ namespace ThatPiHunt.Views
             if (!_isMarking) return;
 
             var curPoint = e.GetCurrentPoint((Image)sender);
-            await new MessageDialog($"Got click on image at: {curPoint.Position.X}, {curPoint.Position.Y}").ShowAsync();
+            var mapOrigin = new Point(FeetToMeters(110), FeetToMeters(300));
+
+            var renderRatio = 535.0 / FeetToMeters(300); // 393.701; // pixels / m
+            //var ratio = Math.Min(MapViewer.ActualWidth / MapImage.DesiredSize.Width, MapViewer.ActualHeight / MapImage.DesiredSize.Height);
+
+            var pointX = curPoint.Position.X / renderRatio;
+            var pointY = curPoint.Position.Y / renderRatio;
+
+            var mapX = pointX - mapOrigin.X;
+            var mapY = mapOrigin.Y - pointY;
+
+            await new MessageDialog($"Got click on image at: {curPoint.Position.X}, {curPoint.Position.Y}; Map Coords ({MetersToFeet(mapX)}, {MetersToFeet(mapY)})").ShowAsync();
         }
 
         private void GenerateMap_Click(object sender, RoutedEventArgs e)
@@ -86,38 +97,50 @@ namespace ThatPiHunt.Views
                 Contestant = new Contestant() { Position = new Point(1200, 1200) },
                 PointsOfInterest = new List<PointOfInterest>
                 {
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000001", Position = new Point(7.600, 0.667), Character = "Blastoise EX" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000002", Position = new Point(2.743, 0.100), Character = "Helioptile" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000003", Position = new Point(1.219, 6.706), Character = "Chansey" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000004", Position = new Point(7.315, 6.401), Character = "Psyduck" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000005", Position = new Point(3.962, 3.658), Character = "Hippopotas" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000006", Position = new Point(7.600, 0.667), Character = "Robo Substitute" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000007", Position = new Point(2.743, 0.100), Character = "Charmander" },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000008", Position = new Point(7.620, 3.048), Character = "Vanillite" },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000009", Position = new Point(0, 6.401), Character = "Buneary" },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000010", Position = new Point(7.010, 14.630), Character = "Flabebe" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000011", Position = new Point(7.600, 0.667), Character = "Gilgar" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000012", Position = new Point(2.743, 0.100), Character = "Yanma" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000013", Position = new Point(1.000, 3.000), Character = "Swirlix" },
-                    //new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000014", Position = new Point(1.500, 3.500), Character = "Glalie EX" },
-                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000015", Position = new Point(0.610, 0.610), Character = "Lombre" },
-                    //new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000016", Position = new Point(1.500, 3.500), Character = "Archen" },
-                    //new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000017", Position = new Point(1.500, 3.500), Character = "Swadloon" },
-                    //new PointOfInterest { Identifier = "20160809000000000000-000000000018", Position = new Point(1.219, 6.706), Character = "Finneon" },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000019", Position = new Point(1.524, 14.935), Character = "Torchic" },
-                    new PointOfInterest { Identifier = "20160809000000000000-000000000020", Position = new Point(3.962, 2.134), Character = "Pikachu" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000001", Position = new Point(FeetToMeters(31), FeetToMeters(116)), Character = "Blastoise EX" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000002", Position = new Point(FeetToMeters(43), FeetToMeters(115)), Character = "Helioptile" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000003", Position = new Point(FeetToMeters(134), FeetToMeters(181)), Character = "Chansey" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000004", Position = new Point(FeetToMeters(131), FeetToMeters(112)), Character = "Psyduck" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000005", Position = new Point(FeetToMeters(110), FeetToMeters(114)), Character = "Hippopotas" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000006", Position = new Point(FeetToMeters(134), FeetToMeters(148)), Character = "Robo Substitute" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000007", Position = new Point(FeetToMeters(122), FeetToMeters(182)), Character = "Charmander" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000008", Position = new Point(FeetToMeters(134), FeetToMeters(230)), Character = "Vanillite" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000009", Position = new Point(FeetToMeters(56), FeetToMeters(27)), Character = "Buneary" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000010", Position = new Point(FeetToMeters(83), FeetToMeters(3)), Character = "Flabebe" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000011", Position = new Point(FeetToMeters(17), FeetToMeters(105)), Character = "Gilgar" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000012", Position = new Point(FeetToMeters(84), FeetToMeters(107)), Character = "Yanma" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000013", Position = new Point(FeetToMeters(11), FeetToMeters(98)), Character = "Swirlix" },
+                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000014", Position = new Point(FeetToMeters(20), FeetToMeters(56)), Character = "Glalie EX" },
+                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000015", Position = new Point(FeetToMeters(121), FeetToMeters(245)), Character = "Lombre" },
+                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000016", Position = new Point(FeetToMeters(121), FeetToMeters(136)), Character = "Archen" },
+                    new PointOfInterest { Identifier = "20160809-0000-0000-0000-000000000017", Position = new Point(FeetToMeters(65), FeetToMeters(116)), Character = "Swadloon" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000018", Position = new Point(FeetToMeters(120), FeetToMeters(217)), Character = "Finneon" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000019", Position = new Point(FeetToMeters(84), FeetToMeters(22)), Character = "Torchic" },
+                    new PointOfInterest { Identifier = "20160809000000000000-000000000020", Position = new Point(FeetToMeters(42), FeetToMeters(14)), Character = "Pikachu" },
                 }
             };
+            _map.CurrentGoal = _map.PointsOfInterest.Last();
 
-            var renderRatio = 393.701; // pixels / m
+            var renderRatio = 535.0 / FeetToMeters(325); // 393.701; // pixels / m
             var ratio = Math.Min(MapViewer.ActualWidth / MapImage.DesiredSize.Width, MapViewer.ActualHeight / MapImage.DesiredSize.Height);
             foreach (var poi in _map.PointsOfInterest)
             {
+                var x = poi.Position.X;
+                var y = poi.Position.Y;
+
+                // Adjust points to map origin (measurement origin is at the bottom, middle of the map)
+                // (draw origin is at the top left of the map, with positive Y downwards)
+                var pointOrigin = new Point(FeetToMeters(110), FeetToMeters(325));
+                x += pointOrigin.X;
+                y = pointOrigin.Y - y; // map coordinates have Y in the 'up' direction
+
                 var point = new Ellipse { Width = 6, Height = 6, Fill = new SolidColorBrush(poi.Color), Tag = poi };
                 MapCanvas.Children.Add(point);
-                 
-                Canvas.SetLeft(point, renderRatio * poi.Position.X * ratio);
-                Canvas.SetTop(point, renderRatio * poi.Position.Y * ratio);
+
+                var drawX = renderRatio * x * ratio;
+                var drawY = renderRatio * y * ratio;
+                Canvas.SetLeft(point, drawX);
+                Canvas.SetTop(point, drawY);
             }
 
             var contestant = new Ellipse { Width = 6, Height = 6, Fill = new SolidColorBrush(Colors.Red), Tag = _map.Contestant };
@@ -126,6 +149,16 @@ namespace ThatPiHunt.Views
             Canvas.SetTop(contestant, renderRatio * _map.Contestant.Position.Y * ratio);
 
             ((Button)sender).IsEnabled = false;
+        }
+
+        private double FeetToMeters(double feet)
+        {
+            return feet * 12 * 2.54 / 100;
+        }
+
+        private double MetersToFeet(double meters)
+        {
+            return meters * 100 / 2.54 / 12;
         }
 
         private async void StartGame_Click(object sender, RoutedEventArgs e)
